@@ -2,6 +2,7 @@ package com.ossant.services;
 
 import com.ossant.model.Customer;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -78,4 +79,13 @@ public class CustomerServiceImpl implements CustomerService {
     public List<Customer> getAllCustomers() {
         return new ArrayList<>(customerMap.values());
     }
+
+    @Override
+    public void patchCustomerById(UUID customerId, Customer customer) {
+        Customer existing = customerMap.get(customerId);
+        if (StringUtils.hasText(customer.getName())) {
+            existing.setName(customer.getName());
+        }
+    }
+
 }
