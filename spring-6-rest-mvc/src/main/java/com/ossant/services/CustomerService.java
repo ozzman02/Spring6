@@ -1,6 +1,6 @@
 package com.ossant.services;
 
-import com.ossant.model.Customer;
+import com.ossant.model.CustomerDTO;
 
 import java.util.List;
 import java.util.Optional;
@@ -8,16 +8,16 @@ import java.util.UUID;
 
 public interface CustomerService {
 
-    Optional<Customer> getCustomerById(UUID uuid);
+    List<CustomerDTO> getAllCustomers();
 
-    List<Customer> getAllCustomers();
+    Optional<CustomerDTO> getCustomerById(UUID uuid);
 
-    Customer saveNewCustomer(Customer customer);
+    CustomerDTO saveNewCustomer(CustomerDTO customerDTO);
 
-    void updateCustomerById(UUID customerId, Customer customer);
+    Optional<CustomerDTO> updateCustomerById(UUID customerId, CustomerDTO customerDTO);
 
-    void deleteCustomerById(UUID customerId);
+    Boolean deleteCustomerById(UUID customerId);
 
-    void patchCustomerById(UUID customerId, Customer customer);
+    Boolean patchCustomerById(UUID customerId, CustomerDTO customerDTO);
 
 }
