@@ -1,6 +1,5 @@
 package com.ossant.services;
 
-import com.ossant.entities.Customer;
 import com.ossant.mappers.CustomerMapper;
 import com.ossant.model.CustomerDTO;
 import com.ossant.repositories.CustomerRepository;
@@ -66,15 +65,18 @@ public class CustomerServiceJPAImpl implements CustomerService {
     }
 
     @Override
-    public Boolean patchCustomerById(UUID customerId, CustomerDTO customerDTO) {
-        if (customerRepository.existsById(customerId)) {
-            Customer existing = customerRepository.findById(customerId).get();
-            if (StringUtils.hasText(customerDTO.getName())) {
-                existing.setName(customerDTO.getName());
+    public Optional<CustomerDTO> patchCustomerById(UUID customerId, CustomerDTO customer) {
+        AtomicReference<Optional<CustomerDTO>> atomicReference = new AtomicReference<>();
+        customerRepository.findById(customerId).ifPresentOrElse(foundCustomer -> {
+            if (StringUtils.hasText(customer.getName())) {
+                foundCustomer.setName(customer.getName());
             }
-            customerRepository.save(existing);
-            return true;
-        }
-        return false;
+            atomicReference.set(Optional.of(customerMapper
+                    .customerToCustomerDto(customerRepository.save(foundCustomer))));
+        }, () -> {
+            atomicReference.set(Optional.empty());
+        });
+        return atomicReference.get();
     }
+
 }

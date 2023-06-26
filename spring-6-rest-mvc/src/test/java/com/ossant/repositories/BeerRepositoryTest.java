@@ -1,11 +1,16 @@
 package com.ossant.repositories;
 
 import com.ossant.entities.Beer;
+import com.ossant.model.BeerStyle;
+import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import java.math.BigDecimal;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DataJpaTest
 class BeerRepositoryTest {
@@ -17,11 +22,33 @@ class BeerRepositoryTest {
     void testSaveBeer() {
         Beer savedBeer = beerRepository.save(Beer.builder()
                 .beerName("MyBeer")
+                .beerStyle(BeerStyle.PALE_ALE)
+                .upc("2222")
+                .price(new BigDecimal("11.99"))
                 .build());
+
+        // Test is running very fast, and it's passing because data is not being flushed to the db.
+        // To see the constraint validation error you need to explicitly flush data.
+        beerRepository.flush();
 
         assertThat(savedBeer).isNotNull();
         assertThat(savedBeer.getId()).isNotNull();
     }
 
+    // Need to annotate the entity with @Size annotation otherwise we will have DataIntegrityViolationException
+    @Test
+    void testSaveBeerNameTooLong() {
+        assertThrows(ConstraintViolationException.class, () -> {
+            Beer savedBeer = beerRepository.save(Beer.builder()
+                    .beerName("MyBeerMyBeerMyBeerMyBeerMyBeerMyBeerMyBeerMyBeerMyBeerMyBeerMyBeer")
+                    .beerStyle(BeerStyle.PALE_ALE)
+                    .upc("2222")
+                    .price(new BigDecimal("11.99"))
+                    .build());
+
+            beerRepository.flush();
+        });
+
+    }
 
 }

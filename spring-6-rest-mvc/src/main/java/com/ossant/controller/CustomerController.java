@@ -32,7 +32,7 @@ public class CustomerController {
     }
 
     @PostMapping(CUSTOMER_PATH)
-    public ResponseEntity<?> handlePost(@RequestBody CustomerDTO customerDTO){
+    public ResponseEntity<?> createCustomer(@RequestBody CustomerDTO customerDTO){
         CustomerDTO savedCustomerDTO = customerService.saveNewCustomer(customerDTO);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Location", "/api/v1/customer/" + savedCustomerDTO.getId().toString());
@@ -53,7 +53,7 @@ public class CustomerController {
 
     @PatchMapping(CUSTOMER_PATH_ID)
     public ResponseEntity<?> patchCustomerById(@PathVariable("customerId") UUID customerId, @RequestBody CustomerDTO customerDTO) {
-        if (!customerService.patchCustomerById(customerId, customerDTO)) throw new NotFoundException();
+        customerService.patchCustomerById(customerId, customerDTO);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

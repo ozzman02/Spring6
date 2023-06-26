@@ -65,7 +65,7 @@ class CustomerControllerIT {
                 .name("New customer dto")
                 .build();
 
-        ResponseEntity<?> responseEntity = customerController.handlePost(customerDTO);
+        ResponseEntity<?> responseEntity = customerController.createCustomer(customerDTO);
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(201));
         assertThat(responseEntity.getHeaders().getLocation()).isNotNull();
 
@@ -129,13 +129,6 @@ class CustomerControllerIT {
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(204));
         Customer patchedCustomer = customerRepository.findById(customer.getId()).get();
         assertThat(patchedCustomer.getName()).isEqualTo(customerName);
-    }
-
-    @Test
-    void testPatchCustomerNotFound() {
-        assertThrows(NotFoundException.class, () -> {
-            customerController.patchCustomerById(UUID.randomUUID(), CustomerDTO.builder().build());
-        });
     }
 
 }

@@ -1,6 +1,5 @@
 package com.ossant.services;
 
-import com.ossant.entities.Beer;
 import com.ossant.mappers.BeerMapper;
 import com.ossant.model.BeerDTO;
 import com.ossant.repositories.BeerRepository;
@@ -70,31 +69,19 @@ public class BeerServiceJPAImpl implements BeerService {
     }
 
     @Override
-    public Boolean patchBeerById(UUID beerId, BeerDTO beerDTO) {
-        if (beerRepository.existsById(beerId)) {
-            Beer existing = beerRepository.findById(beerId).get();
-            if (StringUtils.hasText(beerDTO.getBeerName())){
-                existing.setBeerName(beerDTO.getBeerName());
-            }
-
-            if (beerDTO.getBeerStyle() != null) {
-                existing.setBeerStyle(beerDTO.getBeerStyle());
-            }
-
-            if (beerDTO.getPrice() != null) {
-                existing.setPrice(beerDTO.getPrice());
-            }
-
-            if (beerDTO.getQuantityOnHand() != null){
-                existing.setQuantityOnHand(beerDTO.getQuantityOnHand());
-            }
-
-            if (StringUtils.hasText(beerDTO.getUpc())) {
-                existing.setUpc(beerDTO.getUpc());
-            }
-            beerRepository.save(existing);
-            return true;
-        }
-        return false;
+    public Optional<BeerDTO> patchBeerById(UUID beerId, BeerDTO beerDTO) {
+        AtomicReference<Optional<BeerDTO>> atomicReference = new AtomicReference<>();
+        beerRepository.findById(beerId).ifPresentOrElse(foundBeer -> {
+            if (StringUtils.hasText(beerDTO.getBeerName())) foundBeer.setBeerName(beerDTO.getBeerName());
+            if (beerDTO.getBeerStyle() != null) foundBeer.setBeerStyle(beerDTO.getBeerStyle());
+            if (beerDTO.getPrice() != null) foundBeer.setPrice(beerDTO.getPrice());
+            if (beerDTO.getQuantityOnHand() != null) foundBeer.setQuantityOnHand(beerDTO.getQuantityOnHand());
+            if (StringUtils.hasText(beerDTO.getUpc())) foundBeer.setUpc(beerDTO.getUpc());
+            atomicReference.set(Optional.of(beerMapper.beerToBeerDto(beerRepository.save(foundBeer))));
+        }, () -> {
+            atomicReference.set(Optional.empty());
+        });
+        return atomicReference.get();
     }
+
 }

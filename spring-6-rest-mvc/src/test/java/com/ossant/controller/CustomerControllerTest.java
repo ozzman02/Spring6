@@ -71,6 +71,7 @@ class CustomerControllerTest {
                 .andExpect(jsonPath("$.length()", is(0)));
 
     }
+
     @Test
     void testGetCustomerById() throws Exception {
         CustomerDTO customerDTO = customerServiceImpl.getAllCustomers().get(0);
@@ -154,13 +155,12 @@ class CustomerControllerTest {
         assertThat(customerDTO.getId()).isEqualTo(uuidArgumentCaptor.getValue());
     }
 
-
     @Test
     void testPatchCustomerById() throws Exception {
         CustomerDTO customerDTO = customerServiceImpl.getAllCustomers().get(0);
         Map<String, Object> customerMap = new HashMap<>();
         customerMap.put("name", "New Name");
-        given(customerService.patchCustomerById(any(), any())).willReturn(true);
+        given(customerService.patchCustomerById(any(), any())).willReturn(Optional.of(customerDTO));
         mockMvc.perform(patch(CUSTOMER_PATH_ID, customerDTO.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
@@ -172,25 +172,5 @@ class CustomerControllerTest {
         assertThat(customerDTO.getId()).isEqualTo(uuidArgumentCaptor.getValue());
         assertThat(customerMap.get("name")).isEqualTo(customerArgumentCaptor.getValue().getName());
     }
-
-    @Test
-    void testPatchCustomerByIdNotFound() throws Exception {
-        CustomerDTO customerDTO = customerServiceImpl.getAllCustomers().get(0);
-        Map<String, Object> customerMap = new HashMap<>();
-        customerMap.put("name", "New Name");
-        given(customerService.patchCustomerById(any(), any())).willReturn(false);
-        mockMvc.perform(patch(CUSTOMER_PATH_ID, customerDTO.getId())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(customerMap)))
-                .andExpect(status().isNotFound());
-
-        verify(customerService).patchCustomerById(uuidArgumentCaptor.capture(), customerArgumentCaptor.capture());
-
-        assertThat(customerDTO.getId()).isEqualTo(uuidArgumentCaptor.getValue());
-        assertThat(customerMap.get("name")).isEqualTo(customerArgumentCaptor.getValue().getName());
-    }
-
-
 
 }
