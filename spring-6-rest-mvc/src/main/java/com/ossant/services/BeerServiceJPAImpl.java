@@ -1,7 +1,9 @@
 package com.ossant.services;
 
+import com.ossant.entities.Beer;
 import com.ossant.mappers.BeerMapper;
 import com.ossant.model.BeerDTO;
+import com.ossant.model.BeerStyle;
 import com.ossant.repositories.BeerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
@@ -25,8 +27,30 @@ public class BeerServiceJPAImpl implements BeerService {
     private final BeerMapper beerMapper;
 
     @Override
-    public List<BeerDTO> listBeers() {
-        return beerRepository.findAll().stream()
+    public List<BeerDTO> listBeers(String beerName, BeerStyle beerStyle, Boolean showInventory) {
+
+        List<Beer> beerList;
+
+        if (StringUtils.hasText(beerName) && beerStyle == null) {
+            // beerList = beerRepository.findAll().stream().filter(beer -> beer.getBeerName().contains(beerName)).toList();
+            beerList = beerRepository.findAllByBeerNameIsLikeIgnoreCase("%" + beerName + "%");
+        } else if (!StringUtils.hasText(beerName) && beerStyle != null) {
+            //beerList = beerRepository.findAll().stream().filter(beer -> beer.getBeerStyle().equals(beerStyle)).toList();
+            beerList = beerRepository.findAllByBeerStyle(beerStyle);
+        } else if (StringUtils.hasText(beerName) && beerStyle != null) {
+            /*beerList = beerRepository.findAll().stream()
+                    .filter(beer -> beer.getBeerName().contains(beerName) && beer.getBeerStyle().equals(beerStyle))
+                    .collect(Collectors.toList());*/
+            beerList = beerRepository.findAllByBeerNameIsLikeIgnoreCaseAndBeerStyle("%" + beerName + "%", beerStyle);
+        } else {
+            beerList = beerRepository.findAll();
+        }
+
+        if (showInventory != null && !showInventory) {
+            beerList.forEach(beer -> beer.setQuantityOnHand(null));
+        }
+
+        return beerList.stream()
                 .map(beerMapper::beerToBeerDto)
                 .collect(Collectors.toList());
     }
