@@ -1,0 +1,6 @@
+/Users/osantamaria/Git/SpringFramework6/sdjpa-spring-data-rest-main/src/main/java/guru/springframework/sfgrestbrewery/repositories/BeerRepository.java
+/Users/osantamaria/Git/SpringFramework6/sdjpa-spring-data-rest-main/src/main/java/guru/springframework/sfgrestbrewery/bootstrap/BeerLoader.java
+/Users/osantamaria/Git/SpringFramework6/sdjpa-spring-data-rest-main/src/main/java/guru/springframework/sfgrestbrewery/domain/Customer.java
+/Users/osantamaria/Git/SpringFramework6/sdjpa-spring-data-rest-main/src/main/java/guru/springframework/sfgrestbrewery/SfgRestfulBreweryApplication.java
+/Users/osantamaria/Git/SpringFramework6/sdjpa-spring-data-rest-main/src/main/java/guru/springframework/sfgrestbrewery/domain/BeerStyleEnum.java
+/Users/osantamaria/Git/SpringFramework6/sdjpa-spring-data-rest-main/src/main/java/guru/springframework/sfgrestbrewery/domain/Beer.java
