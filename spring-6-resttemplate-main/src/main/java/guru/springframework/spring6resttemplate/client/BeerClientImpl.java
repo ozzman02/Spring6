@@ -12,6 +12,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 @Service
@@ -62,8 +64,12 @@ public class BeerClientImpl implements BeerClient {
             addQueryParameters(uriComponentsBuilder, beerName, beerStyle, showInventory, pageNumber, pageSize);
         }
 
-        ResponseEntity<BeerDTOPageImpl> response =
-                restTemplate.getForEntity(uriComponentsBuilder.toUriString(), BeerDTOPageImpl.class);
+        /*ResponseEntity<BeerDTOPageImpl> response =
+                restTemplate.getForEntity(uriComponentsBuilder.toUriString(), BeerDTOPageImpl.class);*/
+
+        ResponseEntity<BeerDTOPageImpl> response = restTemplate.getForEntity(
+                URLDecoder.decode(uriComponentsBuilder.toUriString(), StandardCharsets.UTF_8), BeerDTOPageImpl.class);
+
 
         return response.getBody();
     }

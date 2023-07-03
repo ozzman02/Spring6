@@ -92,12 +92,18 @@ public class BeerClientMockTest {
             2. We no longer need the beerClient nor the MockRestServiceServer since we are going to configure them
                 based on our needs. That's what we do in the setup method.
 
+        Spring Security Basic implementation:
+
+            After implementing Spring Security Basic we need to configure the RestTemplate with Basic Auth.
+            The server mock will allow all the test to pass but, we want to check if the authorization header is there.
+            In our tests we need to add andExpect(header("Authorization", "Basic dXNlcjpwYXNzd29yZA=="))
     */
     @Test
     void testListBeers() throws JsonProcessingException {
         String payload = objectMapper.writeValueAsString(getPage());
 
         server.expect(method(HttpMethod.GET))
+                .andExpect(header("Authorization", "Basic dXNlcjpwYXNzd29yZA=="))
                 .andExpect(requestTo(URL + BeerClientImpl.GET_BEER_PATH))
                 .andRespond(withSuccess(payload, MediaType.APPLICATION_JSON));
 
@@ -110,16 +116,17 @@ public class BeerClientMockTest {
         String response = objectMapper.writeValueAsString(getPage());
 
         URI uri = UriComponentsBuilder.fromHttpUrl(URL + BeerClientImpl.GET_BEER_PATH)
-                .queryParam("beerName", "ALE")
+                .queryParam("beerName", "Mango Bobs")
                 .build().toUri();
 
         server.expect(method(HttpMethod.GET))
                 .andExpect(requestTo(uri))
-                .andExpect(queryParam("beerName", "ALE"))
+                .andExpect(header("Authorization", "Basic dXNlcjpwYXNzd29yZA=="))
+                .andExpect(queryParam("beerName", "Mango%20Bobs"))
                 .andRespond(withSuccess(response, MediaType.APPLICATION_JSON));
 
         Page<BeerDTO> responsePage = beerClient
-                .listBeers("ALE", null, null, null, null);
+                .listBeers("Mango Bobs", null, null, null, null);
 
         assertThat(responsePage.getContent().size()).isEqualTo(1);
     }
@@ -137,8 +144,8 @@ public class BeerClientMockTest {
                 .build(dto.getId());
 
         server.expect(method(HttpMethod.POST))
-                .andExpect(requestTo(URL +
-                        BeerClientImpl.GET_BEER_PATH))
+                .andExpect(requestTo(URL + BeerClientImpl.GET_BEER_PATH))
+                .andExpect(header("Authorization", "Basic dXNlcjpwYXNzd29yZA=="))
                 .andRespond(withAccepted().location(uri));
 
         mockGetByIdOperation();
@@ -151,6 +158,7 @@ public class BeerClientMockTest {
     void testUpdateBeer() {
         server.expect(method(HttpMethod.PUT))
                 .andExpect(requestToUriTemplate(URL + BeerClientImpl.GET_BEER_BY_ID_PATH, dto.getId()))
+                .andExpect(header("Authorization", "Basic dXNlcjpwYXNzd29yZA=="))
                 .andRespond(withNoContent());
 
         mockGetByIdOperation();
@@ -164,6 +172,7 @@ public class BeerClientMockTest {
         server.expect(method(HttpMethod.DELETE))
                 .andExpect(requestToUriTemplate(URL + BeerClientImpl.GET_BEER_BY_ID_PATH,
                         dto.getId()))
+                .andExpect(header("Authorization", "Basic dXNlcjpwYXNzd29yZA=="))
                 .andRespond(withNoContent());
 
         beerClient.deleteBeer(dto.getId());
@@ -176,6 +185,7 @@ public class BeerClientMockTest {
         server.expect(method(HttpMethod.DELETE))
                 .andExpect(requestToUriTemplate(URL + BeerClientImpl.GET_BEER_BY_ID_PATH,
                         dto.getId()))
+                .andExpect(header("Authorization", "Basic dXNlcjpwYXNzd29yZA=="))
                 .andRespond(withResourceNotFound());
 
         assertThrows(HttpClientErrorException.class, () -> {
@@ -204,6 +214,7 @@ public class BeerClientMockTest {
         server.expect(method(HttpMethod.GET))
                 .andExpect(requestToUriTemplate(URL +
                         BeerClientImpl.GET_BEER_BY_ID_PATH, dto.getId()))
+                .andExpect(header("Authorization", "Basic dXNlcjpwYXNzd29yZA=="))
                 .andRespond(withSuccess(dtoJson, MediaType.APPLICATION_JSON));
     }
 
