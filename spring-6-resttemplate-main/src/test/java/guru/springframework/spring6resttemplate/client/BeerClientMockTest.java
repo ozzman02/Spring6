@@ -174,18 +174,18 @@ public class BeerClientMockTest {
         String response = objectMapper.writeValueAsString(getPage());
 
         URI uri = UriComponentsBuilder.fromHttpUrl(URL + BeerClientImpl.GET_BEER_PATH)
-                .queryParam("beerName", "Mango Bobs")
+                .queryParam("beerName", "Magic Apple")
                 .build().toUri();
 
         server.expect(method(HttpMethod.GET))
                 .andExpect(requestTo(uri))
                 //.andExpect(header("Authorization", "Basic dXNlcjpwYXNzd29yZA=="))
                 .andExpect(header("Authorization", BEARER_TEST))
-                .andExpect(queryParam("beerName", "Mango%20Bobs"))
+                .andExpect(queryParam("beerName", "Magic%20Apple"))
                 .andRespond(withSuccess(response, MediaType.APPLICATION_JSON));
 
         Page<BeerDTO> responsePage = beerClient
-                .listBeers("Mango Bobs", null, null, null, null);
+                .listBeers("Magic Apple", null, null, null, null);
 
         assertThat(responsePage.getContent().size()).isEqualTo(1);
     }
