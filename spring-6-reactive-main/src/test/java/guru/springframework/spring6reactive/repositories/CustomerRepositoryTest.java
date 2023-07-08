@@ -30,7 +30,7 @@ public class CustomerRepositoryTest {
         System.out.println(objectMapper.writeValueAsString(getTestCustomer()));
     }
 
-    Customer getTestCustomer() {
+    public static Customer getTestCustomer() {
         return Customer.builder()
                 .customerName("Vladimir Bonilla")
                 .build();

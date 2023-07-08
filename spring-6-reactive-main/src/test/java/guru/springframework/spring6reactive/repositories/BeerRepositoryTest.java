@@ -12,7 +12,8 @@ import org.springframework.context.annotation.Import;
 import java.math.BigDecimal;
 
 @DataR2dbcTest
-@Import(DatabaseConfiguration.class) // this is to bring in the EnableR2dbcAuditing annotation
+@Import(DatabaseConfiguration.class)
+public // this is to bring in the EnableR2dbcAuditing annotation
 class BeerRepositoryTest {
 
     @Autowired
@@ -32,7 +33,7 @@ class BeerRepositoryTest {
         System.out.println(objectMapper.writeValueAsString(getTestBeer()));
     }
 
-    Beer getTestBeer() {
+    public static Beer getTestBeer() {
         return Beer.builder()
                 .beerName("Space Dust")
                 .beerStyle("IPA")
