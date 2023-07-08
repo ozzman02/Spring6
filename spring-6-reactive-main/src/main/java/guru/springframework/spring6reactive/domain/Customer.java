@@ -8,32 +8,19 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Beer {
+public class Customer {
 
     @Id
     private Integer id;
 
-    private String beerName;
+    private String customerName;
 
-    private String beerStyle;
-
-    private String upc;
-
-    private Integer quantityOnHand;
-
-    private BigDecimal price;
-
-    /*
-        We are using @EnableR2dbcAuditing in the DatabaseConfiguration class
-        to be able to use @CreatedDate and @LastModifiedDate.
-     */
     @CreatedDate
     private LocalDateTime createdDate;
 
