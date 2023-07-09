@@ -1,5 +1,6 @@
 package guru.springframework.spring6reactive.controllers;
 
+import guru.springframework.spring6reactive.domain.Customer;
 import guru.springframework.spring6reactive.model.CustomerDTO;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -14,6 +15,8 @@ import reactor.core.publisher.Mono;
 import static guru.springframework.spring6reactive.app.ApplicationConstants.CUSTOMER_PATH;
 import static guru.springframework.spring6reactive.app.ApplicationConstants.CUSTOMER_PATH_ID;
 import static guru.springframework.spring6reactive.repositories.CustomerRepositoryTest.getTestCustomer;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @SpringBootTest
 @AutoConfigureWebTestClient
@@ -29,7 +32,7 @@ class CustomerControllerTest {
         webTestClient.get().uri(CUSTOMER_PATH)
                 .exchange()
                 .expectStatus().isOk()
-                .expectHeader().valueEquals("Content-type", "application/json")
+                .expectHeader().valueEquals(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                 .expectBody().jsonPath("$.size()").isEqualTo(3);
     }
 
@@ -39,7 +42,7 @@ class CustomerControllerTest {
         webTestClient.get().uri(CUSTOMER_PATH_ID, 1)
                 .exchange()
                 .expectStatus().isOk()
-                .expectHeader().valueEquals("Content-type", "application/json")
+                .expectHeader().valueEquals(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                 .expectBody(CustomerDTO.class);
     }
 
@@ -48,7 +51,7 @@ class CustomerControllerTest {
     void createNewCustomer() {
         webTestClient.post().uri(CUSTOMER_PATH)
                 .body(Mono.just(getTestCustomer()), CustomerDTO.class)
-                .header("Content-Type", "application/json")
+                .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                 .exchange()
                 .expectStatus().isCreated()
                 .expectHeader().location("http://localhost:8080/api/v2/customer/4");
@@ -82,5 +85,74 @@ class CustomerControllerTest {
                 .exchange()
                 .expectStatus()
                 .isNoContent();
+    }
+
+    @Test
+    @Order(7)
+    void testCreateCustomerBadData() {
+        Customer testCustomer = getTestCustomer();
+        testCustomer.setCustomerName("");
+        webTestClient.post()
+                .uri(CUSTOMER_PATH)
+                .body(Mono.just(testCustomer), CustomerDTO.class)
+                .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
+    @Order(8)
+    void testUpdateCustomerBadRequest() {
+        Customer testCustomer = getTestCustomer();
+        testCustomer.setCustomerName("");
+        webTestClient.put()
+                .uri(CUSTOMER_PATH_ID, 1)
+                .body(Mono.just(testCustomer), CustomerDTO.class)
+                .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
+    @Order(9)
+    void testGetCustomerByIdNotFound() {
+        webTestClient.get()
+                .uri(CUSTOMER_PATH_ID, 999)
+                .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+    @Test
+    @Order(10)
+    void testUpdateBeerNotFound() {
+        webTestClient.put()
+                .uri(CUSTOMER_PATH_ID, 999)
+                .body(Mono.just(getTestCustomer()), CustomerDTO.class)
+                .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+    @Test
+    @Order(11)
+    void testPatchBeerNotFound() {
+        webTestClient.patch()
+                .uri(CUSTOMER_PATH_ID, 999)
+                .body(Mono.just(getTestCustomer()), CustomerDTO.class)
+                .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+    @Test
+    @Order(12)
+    void testDeleteBeerNotFound() {
+        webTestClient.delete()
+                .uri(CUSTOMER_PATH_ID, 999)
+                .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                .exchange()
+                .expectStatus()
+                .isNotFound();
     }
 }

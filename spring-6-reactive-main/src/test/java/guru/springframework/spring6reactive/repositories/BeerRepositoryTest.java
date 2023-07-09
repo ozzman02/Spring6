@@ -12,9 +12,8 @@ import org.springframework.context.annotation.Import;
 import java.math.BigDecimal;
 
 @DataR2dbcTest
-@Import(DatabaseConfiguration.class)
-public // this is to bring in the EnableR2dbcAuditing annotation
-class BeerRepositoryTest {
+@Import(DatabaseConfiguration.class) // this is to bring in the EnableR2dbcAuditing annotation
+public class BeerRepositoryTest {
 
     @Autowired
     BeerRepository beerRepository;
