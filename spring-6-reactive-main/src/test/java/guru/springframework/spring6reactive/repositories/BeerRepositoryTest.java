@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import guru.springframework.spring6reactive.configuration.DatabaseConfiguration;
 import guru.springframework.spring6reactive.domain.Beer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.r2dbc.DataR2dbcTest;
@@ -13,6 +14,7 @@ import java.math.BigDecimal;
 
 @DataR2dbcTest
 @Import(DatabaseConfiguration.class) // this is to bring in the EnableR2dbcAuditing annotation
+@Order(4)
 public class BeerRepositoryTest {
 
     @Autowired
