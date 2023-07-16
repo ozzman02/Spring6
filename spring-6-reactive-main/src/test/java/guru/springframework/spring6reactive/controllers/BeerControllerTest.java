@@ -22,7 +22,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @AutoConfigureWebTestClient
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @Order(2)
-class BeerControllerTest {
+public class BeerControllerTest {
 
     @Autowired
     WebTestClient webTestClient;
