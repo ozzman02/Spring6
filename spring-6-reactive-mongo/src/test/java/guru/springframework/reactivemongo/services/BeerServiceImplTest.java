@@ -15,11 +15,12 @@ import java.math.BigDecimal;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static guru.springframework.reactivemongo.app.ApplicationConstants.TEST_NEW_BEER_NAME;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
 @SpringBootTest
-class BeerServiceImplTest {
+public class BeerServiceImplTest {
 
     @Autowired
     BeerService beerService;
@@ -108,9 +109,8 @@ class BeerServiceImplTest {
     @Test
     @DisplayName("Test Update Beer Using Block")
     void testUpdateBlocking() {
-        final String newName = "New Beer Name";  // use final so cannot mutate
         BeerDTO savedBeerDto = getSavedBeerDto();
-        savedBeerDto.setBeerName(newName);
+        savedBeerDto.setBeerName(TEST_NEW_BEER_NAME);
 
         BeerDTO updatedDto = beerService.saveBeer(Mono.just(savedBeerDto)).block();
 
@@ -118,14 +118,12 @@ class BeerServiceImplTest {
         assert updatedDto != null;
         BeerDTO fetchedDto = beerService.getById(updatedDto.getId()).block();
         assert fetchedDto != null;
-        assertThat(fetchedDto.getBeerName()).isEqualTo(newName);
+        assertThat(fetchedDto.getBeerName()).isEqualTo(TEST_NEW_BEER_NAME);
     }
 
     @Test
     @DisplayName("Test Update Using Reactive Streams")
     void testUpdateStreaming() {
-        final String newName = "New Beer Name";  // use final so cannot mutate
-
         AtomicReference<BeerDTO> atomicDto = new AtomicReference<>();
 
         /*
@@ -143,7 +141,7 @@ class BeerServiceImplTest {
 
         beerService.saveBeer(Mono.just(getTestBeerDto()))
                 .map(savedBeerDto -> {
-                    savedBeerDto.setBeerName(newName);
+                    savedBeerDto.setBeerName(TEST_NEW_BEER_NAME);
                     return savedBeerDto;
                 })
                 .flatMap(beerService::saveBeer) // save updated beer
@@ -151,7 +149,7 @@ class BeerServiceImplTest {
                 .subscribe(atomicDto::set);
 
         await().until(() -> atomicDto.get() != null);
-        assertThat(atomicDto.get().getBeerName()).isEqualTo(newName);
+        assertThat(atomicDto.get().getBeerName()).isEqualTo(TEST_NEW_BEER_NAME);
     }
 
     /*
@@ -197,9 +195,21 @@ class BeerServiceImplTest {
         await().untilTrue(atomicBoolean);
     }
 
+    @Test
+    void testPatchBeerStreaming() {
+        AtomicReference<BeerDTO> atomicDto = new AtomicReference<>();
+        BeerDTO savedBeerDto = getSavedBeerDto();
+        savedBeerDto.setBeerName(TEST_NEW_BEER_NAME);
+        beerService.patchBeer(savedBeerDto.getId(), savedBeerDto)
+                .flatMap(patchedBeerDto ->
+                        beerService.getById(patchedBeerDto.getId()))
+                .subscribe(atomicDto::set);
+        await().until(() -> atomicDto.get() != null);
+        assertThat(atomicDto.get().getBeerName()).isEqualTo(TEST_NEW_BEER_NAME);
+    }
 
     /* For our test we have a pattern where we need to create a saved object in the database */
-    public BeerDTO getSavedBeerDto(){
+    public BeerDTO getSavedBeerDto() {
         return beerService.saveBeer(Mono.just(getTestBeerDto())).block();
     }
 

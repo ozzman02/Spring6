@@ -22,7 +22,7 @@ public class MongoConfiguration extends AbstractReactiveMongoConfiguration {
 
     @Override
     protected String getDatabaseName() {
-        return "sfg";
+        return MONGO_DATABASE_NAME;
     }
 
     @Override
@@ -30,7 +30,7 @@ public class MongoConfiguration extends AbstractReactiveMongoConfiguration {
         builder.credential(MongoCredential
                         .createCredential(
                                 MONGO_DATABASE_USERNAME,
-                                MONGO_DATABASE_NAME,
+                                MONGO_DATABASE_ADMIN_NAME,
                                 MONGO_DATABASE_PASSWORD.toCharArray())
                 ).applyToClusterSettings(settings -> {
                     settings.hosts((singletonList(

@@ -1,6 +1,5 @@
 package guru.springframework.reactivemongo.services;
 
-import guru.springframework.reactivemongo.domain.Beer;
 import guru.springframework.reactivemongo.mappers.BeerMapper;
 import guru.springframework.reactivemongo.model.BeerDTO;
 import guru.springframework.reactivemongo.repositories.BeerRepository;
@@ -9,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
 
 @Service
 @RequiredArgsConstructor
@@ -56,23 +56,85 @@ public class BeerServiceImpl implements BeerService {
                 .map(beerMapper::beerToBeerDto);
     }
 
+    /*@Override
+    public Mono<BeerDTO> patchBeer(String beerId, BeerDTO beerDTO) {
+
+        beerRepository.findById(beerId)
+                .subscribe(foundBeer -> {
+                    System.out.println(foundBeer);
+                    if (StringUtils.hasText(beerDTO.getBeerName())) {
+                        foundBeer.setBeerName(beerDTO.getBeerName());
+                    }
+                    if (StringUtils.hasText(beerDTO.getBeerStyle())) {
+                        foundBeer.setBeerStyle(beerDTO.getBeerStyle());
+                    }
+                    if (beerDTO.getPrice() != null) {
+                        foundBeer.setPrice(beerDTO.getPrice());
+                    }
+                    if (StringUtils.hasText(beerDTO.getUpc())) {
+                        foundBeer.setUpc(beerDTO.getUpc());
+                    }
+                    if (beerDTO.getQuantityOnHand() != null) {
+                        foundBeer.setQuantityOnHand(beerDTO.getQuantityOnHand());
+                    }
+                    beerRepository.save(foundBeer).block();
+                });
+        return Mono.empty();
+    }*/
+
+    /*@Override
+    public Mono<BeerDTO> patchBeer(String beerId, BeerDTO beerDTO) {
+        Mono<Beer> monoBeer = beerRepository.findById(beerId)
+                .map(foundBeer -> {
+                    if (StringUtils.hasText(beerDTO.getBeerName())) {
+                        foundBeer.setBeerName(beerDTO.getBeerName());
+                    }
+
+                    if (StringUtils.hasText(beerDTO.getBeerStyle())) {
+                        foundBeer.setBeerStyle(beerDTO.getBeerStyle());
+                    }
+
+                    if (beerDTO.getPrice() != null) {
+                        foundBeer.setPrice(beerDTO.getPrice());
+                    }
+
+                    if (StringUtils.hasText(beerDTO.getUpc())) {
+                        foundBeer.setUpc(beerDTO.getUpc());
+                    }
+
+                    if (beerDTO.getQuantityOnHand() != null) {
+                        foundBeer.setQuantityOnHand(beerDTO.getQuantityOnHand());
+                    }
+                    return foundBeer;
+                });
+        monoBeer.subscribe(beer -> {
+            System.out.println(beer);
+            beerRepository.save(beer).block();
+        });
+        return Mono.empty();
+    }*/
+
     @Override
     public Mono<BeerDTO> patchBeer(String beerId, BeerDTO beerDTO) {
         return beerRepository.findById(beerId)
                 .map(foundBeer -> {
-                    if(StringUtils.hasText(beerDTO.getBeerName())){
+                    if (StringUtils.hasText(beerDTO.getBeerName())){
                         foundBeer.setBeerName(beerDTO.getBeerName());
                     }
-                    if(StringUtils.hasText(beerDTO.getBeerStyle())){
+
+                    if (StringUtils.hasText(beerDTO.getBeerStyle())){
                         foundBeer.setBeerStyle(beerDTO.getBeerStyle());
                     }
-                    if(beerDTO.getPrice() != null){
+
+                    if (beerDTO.getPrice() != null){
                         foundBeer.setPrice(beerDTO.getPrice());
                     }
-                    if(StringUtils.hasText(beerDTO.getUpc())){
+
+                    if (StringUtils.hasText(beerDTO.getUpc())){
                         foundBeer.setUpc(beerDTO.getUpc());
                     }
-                    if(beerDTO.getQuantityOnHand() != null){
+
+                    if (beerDTO.getQuantityOnHand() != null){
                         foundBeer.setQuantityOnHand(beerDTO.getQuantityOnHand());
                     }
                     return foundBeer;
